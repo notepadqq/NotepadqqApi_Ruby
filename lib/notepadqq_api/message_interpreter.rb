@@ -1,4 +1,4 @@
-class NqqApiLayer
+class NotepadqqApi
   class MessageInterpreter
 
     def initialize(messageChannel)

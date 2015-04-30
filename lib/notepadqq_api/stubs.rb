@@ -1,4 +1,4 @@
-class NqqApiLayer
+class NotepadqqApi
   module Stubs
 
     class Stub
@@ -28,7 +28,7 @@ class NqqApiLayer
 
     end
 
-    class Nqq < Stub; end
+    class Notepadqq < Stub; end
     class Editor < Stub; end
     class Window < Stub; end
     class MenuItem < Stub; end

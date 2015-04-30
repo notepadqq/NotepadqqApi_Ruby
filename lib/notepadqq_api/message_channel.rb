@@ -1,7 +1,7 @@
 require 'socket'
 require 'json'
 
-class NqqApiLayer
+class NotepadqqApi
   class MessageChannel
 
     def initialize(socketPath)
