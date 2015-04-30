@@ -17,12 +17,14 @@ class NotepadqqApi
       end 
 
       def ==(other)
-        other.class <= Stub && id == other.id
+        other.class <= Stub &&
+        id == other.id &&
+        messageInterpreter == other.messageInterpreter
       end
 
       protected
       
-      attr_reader :id
+      attr_reader :id, :messageInterpreter
 
     end
 

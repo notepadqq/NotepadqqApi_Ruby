@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'notepadqq_api'
-  s.version     = '0.1.2'
+  s.version     = '0.1.3'
   s.date        = '2015-04-30'
   s.summary     = "Notepadqq API Layer"
   s.description = "Notepadqq API Layer for extensions"
@@ -11,8 +11,9 @@ Gem::Specification.new do |s|
                    "lib/notepadqq_api/message_interpreter.rb",
                    "lib/notepadqq_api/stubs.rb",
                    "test/test_message_interpreter.rb",
+                   "test/test_stubs.rb",
                   ]
-  s.homepage    = 'http://rubygems.org/gems/hola'
+  s.homepage    = 'https://rubygems.org/gems/notepadqq_api'
   s.license     = 'MIT'
 
   s.add_runtime_dependency 'json', '~> 1.8'

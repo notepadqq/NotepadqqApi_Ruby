@@ -29,6 +29,35 @@ class NotepadqqApi
     
   end
   
+  # Execute a block for every new window.
+  # This is preferable to the "newWindow" event of Notepadqq, because it could
+  # happen that the extension isn't ready soon enough to receive the
+  # "newWindow" event for the first Window. This method, instead, ensures that
+  # the passed block will be called once and only once for each current or
+  # future window.
+  def onWindowCreated(&callback)
+    capturedWindows = []
+    
+    # Invoke the callback for every currently open window
+    notepadqq.windows.each do |window|
+      unless capturedWindows.include? window
+        capturedWindows.push window
+        callback.call(window)
+      end
+    end
+
+    # Each time a new window gets opened, invoke the callback.
+    # When Notepadqq is starting and initializing all the extensions,
+    # we might not be fast enough to receive this event: this is why
+    # we manually invoked the callback for every currently open window.
+    notepadqq.on(:newWindow) do |window|
+      unless capturedWindows.include? window
+        capturedWindows.push window
+        callback.call(window)
+      end
+    end
+  end
+  
   # Returns an instance of Notepadqq
   def notepadqq
     @nqq ||= Stubs::Notepadqq.new(@messageInterpreter, NQQ_STUB_ID);
