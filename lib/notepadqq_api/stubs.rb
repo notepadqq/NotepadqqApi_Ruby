@@ -2,7 +2,7 @@ class NotepadqqApi
   module Stubs
 
     class Stub
-
+      
       def initialize(messageInterpreter, id)
         @messageInterpreter = messageInterpreter
         @id = id
@@ -21,10 +21,8 @@ class NotepadqqApi
       end
 
       protected
-
-      def id
-        @id
-      end
+      
+      attr_reader :id
 
     end
 
