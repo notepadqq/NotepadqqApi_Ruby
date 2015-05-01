@@ -18,4 +18,6 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency 'json', '~> 1.8'
   s.add_development_dependency 'rake', '~> 10.0'
+
+  s.required_ruby_version = '>= 2.0'
 end
