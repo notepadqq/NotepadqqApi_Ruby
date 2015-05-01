@@ -6,28 +6,30 @@ class NotepadqqApi
   
   NQQ_STUB_ID = 1
   
-  attr_reader :extensionId
+  attr_reader :extension_id
   
-  def initialize(socketPath = ARGV[0], extensionId = ARGV[1])
-    @socketPath = socketPath
-    @extensionId = extensionId
+  def initialize(socket_path = ARGV[0], extension_id = ARGV[1])
+    @socket_path = socket_path
+    @extension_id = extension_id
     
-    @messageChannel = MessageChannel.new(@socketPath)
-    @messageInterpreter = MessageInterpreter.new(@messageChannel)
+    @message_channel = MessageChannel.new(@socket_path)
+    @message_interpreter = MessageInterpreter.new(@message_channel)
   end
   
   # Start reading messages and calling event handlers
-  def runEventLoop
+  def run_event_loop
     yield
     
     while true do
-      messages = @messageChannel.getMessages
+      messages = @message_channel.get_messages
       messages.each do |msg|
-        @messageInterpreter.processMessage(msg)
+        @message_interpreter.process_message(msg)
       end
     end
-    
   end
+  
+  # For compatibility
+  alias_method :runEventLoop, :run_event_loop
   
   # Execute a block for every new window.
   # This is preferable to the "newWindow" event of Notepadqq, because it could
@@ -35,13 +37,13 @@ class NotepadqqApi
   # "newWindow" event for the first Window. This method, instead, ensures that
   # the passed block will be called once and only once for each current or
   # future window.
-  def onWindowCreated(&callback)
-    capturedWindows = []
+  def on_window_created(&callback)
+    captured_windows = []
     
     # Invoke the callback for every currently open window
     notepadqq.windows.each do |window|
-      unless capturedWindows.include? window
-        capturedWindows.push window
+      unless captured_windows.include? window
+        captured_windows.push window
         callback.call(window)
       end
     end
@@ -51,16 +53,19 @@ class NotepadqqApi
     # we might not be fast enough to receive this event: this is why
     # we manually invoked the callback for every currently open window.
     notepadqq.on(:newWindow) do |window|
-      unless capturedWindows.include? window
-        capturedWindows.push window
+      unless captured_windows.include? window
+        captured_windows.push window
         callback.call(window)
       end
     end
   end
   
+  # For compatibility
+  alias_method :onWindowCreated, :on_window_created
+  
   # Returns an instance of Notepadqq
   def notepadqq
-    @nqq ||= Stubs::Notepadqq.new(@messageInterpreter, NQQ_STUB_ID);
+    @nqq ||= Stubs::Notepadqq.new(@message_interpreter, NQQ_STUB_ID);
     return @nqq
   end
   

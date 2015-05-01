@@ -4,24 +4,24 @@ require 'json'
 class NotepadqqApi
   class MessageChannel
 
-    def initialize(socketPath)
+    def initialize(socket_path)
       # Connect to Notepadqq socket
-      @client = UNIXSocket.open(socketPath)
+      @client = UNIXSocket.open(socket_path)
 
-      @incomingBuffer = "" # Incomplete json messages (as strings)
-      @parsedBuffer = [] # Unprocessed object messages
+      @incoming_buffer = "" # Incomplete json messages (as strings)
+      @parsed_buffer = [] # Unprocessed object messages
     end
 
     # Sends a JSON message to Notepadqq
-    def sendMessage(msg)
-      sendRawMessage(JSON.generate(msg))
+    def send_message(msg)
+      send_raw_message(JSON.generate(msg))
     end
 
     # Read incoming messages
-    def getMessages(block=true)
+    def get_messages(block=true)
 
       begin
-        if block and @incomingBuffer.empty? and @parsedBuffer.empty?
+        if block and @incoming_buffer.empty? and @parsed_buffer.empty?
           read = @client.recv(1048576)
         else
           read = @client.recv_nonblock(1048576)
@@ -30,15 +30,15 @@ class NotepadqqApi
         read = ""
       end
 
-      @incomingBuffer += read
-      messages = @incomingBuffer.split("\n")
+      @incoming_buffer += read
+      messages = @incoming_buffer.split("\n")
 
-      if @incomingBuffer.end_with? "\n"
+      if @incoming_buffer.end_with? "\n"
         # We only got complete messages: clear the buffer
-        @incomingBuffer.clear
+        @incoming_buffer.clear
       else
         # We need to store the incomplete message in the buffer
-        @incomingBuffer = messages.pop || ""
+        @incoming_buffer = messages.pop || ""
       end
 
       converted = []
@@ -51,29 +51,29 @@ class NotepadqqApi
         end
       end
 
-      retval = @parsedBuffer + converted
-      @parsedBuffer = []
+      retval = @parsed_buffer + converted
+      @parsed_buffer = []
 
       # Make sure that, when block=true, at least one message is received
       if block and retval.empty?
-        retval += getMessages(true)
+        retval += get_messages(true)
       end
 
       return retval
     end
 
     # Get the next message of type "result".
-    # The other messages will still be returned by getMessages 
-    def getNextResultMessage
+    # The other messages will still be returned by get_messages 
+    def get_next_result_message
       discarded = []
 
       while true do
-        chunk = self.getMessages
+        chunk = self.get_messages
         for i in 0...chunk.length
           if chunk[i].has_key?("result")
             discarded += chunk[0...i]
             discarded += chunk[i+1..-1]
-            @parsedBuffer = discarded
+            @parsed_buffer = discarded
             return chunk[i]
           end
         end
@@ -86,7 +86,7 @@ class NotepadqqApi
     private
 
     # Sends a raw string message to Notepadqq
-    def sendRawMessage(msg)
+    def send_raw_message(msg)
       @client.send(msg, 0)
     end
 

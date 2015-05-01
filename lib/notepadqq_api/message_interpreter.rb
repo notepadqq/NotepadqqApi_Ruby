@@ -1,8 +1,8 @@
 class NotepadqqApi
   class MessageInterpreter
 
-    def initialize(messageChannel)
-      @messageChannel = messageChannel
+    def initialize(message_channel)
+      @message_channel = message_channel
 
       # Hash of event handlers, for example
       # {
@@ -11,33 +11,33 @@ class NotepadqqApi
       #   },
       #   ...
       # }
-      # Where 1 is an objectId and "newWindow" is an event of that object
-      @eventHandlers = {}
+      # Where 1 is an object_id and "newWindow" is an event of that object
+      @event_handlers = {}
     end
 
-    # Assign an event of a particular objectId to a callback
-    def registerEventHandler(objectId, event, callback)
+    # Assign an event of a particular object_id to a callback
+    def register_event_handler(object_id, event, callback)
       event = event.to_sym
 
-      @eventHandlers[objectId] ||= {}
-      @eventHandlers[objectId][event] ||= []
+      @event_handlers[object_id] ||= {}
+      @event_handlers[object_id][event] ||= []
 
-      @eventHandlers[objectId][event].push(callback)
+      @event_handlers[object_id][event].push(callback)
     end
 
-    # Calls a method on the remote object objectId
-    def invokeApi(objectId, method, args)
+    # Calls a method on the remote object object_id
+    def invoke_api(object_id, method, args)
       message = {
-        :objectId => objectId,
+        :objectId => object_id,
         :method => method,
         :args => args
       }
 
-      @messageChannel.sendMessage(message)
-      reply = @messageChannel.getNextResultMessage
+      @message_channel.send_message(message)
+      reply = @message_channel.get_next_result_message
 
       result = [reply["result"]]
-      convertStubs!(result)
+      convert_stubs!(result)
       result = result[0]
 
       if reply["err"] != MessageInterpreterError::ErrorCode::NONE
@@ -48,9 +48,9 @@ class NotepadqqApi
       return result
     end
 
-    def processMessage(message)
+    def process_message(message)
       if message.has_key?("event")
-        processEventMessage(message)
+        process_event_message(message)
       elsif message.has_key?("result")
         # We shouldn't have received it here... ignore it
       end
@@ -59,15 +59,15 @@ class NotepadqqApi
     private
 
     # Call the handlers connected to this event
-    def processEventMessage(message)
+    def process_event_message(message)
       event = message["event"].to_sym
-      objectId = message["objectId"]
+      object_id = message["objectId"]
 
-      if @eventHandlers[objectId] and @eventHandlers[objectId][event]
-        handlers = @eventHandlers[objectId][event]
+      if @event_handlers[object_id] and @event_handlers[object_id][event]
+        handlers = @event_handlers[object_id][event]
 
         args = message["args"]
-        convertStubs!(args)
+        convert_stubs!(args)
 
         (handlers.length-1).downto(0).each { |i| 
           handlers[i].call(*args)
@@ -75,32 +75,32 @@ class NotepadqqApi
       end
     end
 
-    def convertStubs!(dataArray)
+    def convert_stubs!(data_array)
       # FIXME Use a stack
 
-      dataArray.map! { |value|
+      data_array.map! { |value|
         unless value.nil?
           if value.kind_of?(Array)
-            convertStubs!(value)
+            convert_stubs!(value)
 
           elsif value.kind_of?(Hash) and
                 value["$__nqq__stub_type"].kind_of?(String) and
                 value["id"].kind_of?(Fixnum)
 
-            stubType = value["$__nqq__stub_type"]
+            stub_type = value["$__nqq__stub_type"]
             begin
-              stub = Object::const_get(Stubs.name + "::" + stubType)
+              stub = Object::const_get(Stubs.name + "::" + stub_type)
               stub.new(self, value["id"])
             rescue
-              puts "Unknown stub: " + stubType
+              puts "Unknown stub: " + stub_type
               value
             end
 
           elsif value.kind_of?(Hash)
             value.each do |key, data|
-              tmpArray = [data]
-              convertStubs!(tmpArray)
-              value[key] = tmpArray[0]
+              tmp_array = [data]
+              convert_stubs!(tmp_array)
+              value[key] = tmp_array[0]
             end
 
             value
