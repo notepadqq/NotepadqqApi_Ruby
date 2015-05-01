@@ -40,7 +40,10 @@ class NotepadqqApi
       convertStubs!(result)
       result = result[0]
 
-      # Fixme check for errors in reply["err"]
+      if reply["err"] != MessageInterpreterError::ErrorCode::NONE
+        error = MessageInterpreterError.new(reply["err"])
+        raise error, error.description
+      end
 
       return result
     end
@@ -110,4 +113,38 @@ class NotepadqqApi
     end
 
   end
+
+  class MessageInterpreterError < RuntimeError
+
+    module ErrorCode
+        NONE = 0
+        INVALID_REQUEST = 1
+        INVALID_ARGUMENT_NUMBER = 2
+        INVALID_ARGUMENT_TYPE = 3
+        OBJECT_DEALLOCATED = 4
+        OBJECT_NOT_FOUND = 5
+        METHOD_NOT_FOUND = 6
+    end
+
+    attr_reader :error_code
+
+    def initialize(error_code)
+      @error_code = error_code
+    end
+
+    def description
+      case @error_code
+        when ErrorCode::NONE then "None"
+        when ErrorCode::INVALID_REQUEST then "Invalid request"
+        when ErrorCode::INVALID_ARGUMENT_NUMBER then "Invalid argument number"
+        when ErrorCode::INVALID_ARGUMENT_TYPE then "Invalid argument type"
+        when ErrorCode::OBJECT_DEALLOCATED then "Object deallocated"
+        when ErrorCode::OBJECT_NOT_FOUND then "Object not found"
+        when ErrorCode::METHOD_NOT_FOUND then "Method not found"
+        else "Unknown error"
+      end
+    end
+
+  end
+
 end
