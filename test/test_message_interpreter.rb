@@ -1,4 +1,4 @@
-require 'test/unit'
+require 'minitest/autorun'
 require 'notepadqq_api/message_channel'
 require 'notepadqq_api/message_interpreter'
 require 'notepadqq_api/stubs'
@@ -11,7 +11,7 @@ class MessageChannelStub
   end
 end
 
-class MessageInterpreterTest < Test::Unit::TestCase
+class MessageInterpreterTest < Minitest::Test
   
   def test_invoke_api_simple_return
     channel = MessageChannelStub.new nil

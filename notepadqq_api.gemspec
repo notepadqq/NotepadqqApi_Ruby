@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'notepadqq_api'
-  s.version     = '0.1.3'
+  s.version     = '0.1.4'
   s.date        = '2015-04-30'
   s.summary     = "Notepadqq API Layer"
   s.description = "Notepadqq API Layer for extensions"
@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency 'json', '~> 1.8'
   s.add_development_dependency 'rake', '~> 10.0'
+  s.add_development_dependency 'minitest', '~> 5.5'
 
   s.required_ruby_version = '>= 2.0'
 end
