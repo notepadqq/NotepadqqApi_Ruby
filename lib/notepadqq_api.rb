@@ -5,6 +5,7 @@ require 'notepadqq_api/stubs'
 class NotepadqqApi
   
   NQQ_STUB_ID = 1
+  private_constant :NQQ_STUB_ID
   
   attr_reader :extension_id
   

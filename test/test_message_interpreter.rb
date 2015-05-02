@@ -3,17 +3,18 @@ require 'notepadqq_api/message_channel'
 require 'notepadqq_api/message_interpreter'
 require 'notepadqq_api/stubs'
 
-class ChannelStub
-  def initialize(socket_path) end
-  def send_message(msg) end
-  def get_messages(block=true) end
-  def get_next_result_message() end
+class MessageChannelStub
+  def initialize(*) end
+  
+  NotepadqqApi::MessageChannel.instance_methods(false).each do |m|
+    define_method(m) { |*| }
+  end
 end
 
 class MessageInterpreterTest < Test::Unit::TestCase
   
   def test_invoke_api_simple_return
-    channel = ChannelStub.new nil
+    channel = MessageChannelStub.new nil
     def channel.get_next_result_message
       {
         'err' => 0,
@@ -28,7 +29,7 @@ class MessageInterpreterTest < Test::Unit::TestCase
   end
   
   def test_invoke_api_array_return
-    channel = ChannelStub.new nil
+    channel = MessageChannelStub.new nil
     def channel.get_next_result_message
       {
         'err' => 0,
