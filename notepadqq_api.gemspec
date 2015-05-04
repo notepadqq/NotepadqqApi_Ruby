@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'notepadqq_api'
-  s.version     = '0.1.4'
-  s.date        = '2015-05-02'
+  s.version     = '0.1.5'
+  s.date        = '2015-05-04'
   s.summary     = "Notepadqq API Layer"
   s.description = "Notepadqq API Layer for extensions"
   s.authors     = ["Daniele Di Sarli"]

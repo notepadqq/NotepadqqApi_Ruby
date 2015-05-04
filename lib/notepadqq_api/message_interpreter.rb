@@ -41,7 +41,7 @@ class NotepadqqApi
       result = result[0]
 
       if reply["err"] != MessageInterpreterError::ErrorCode::NONE
-        error = MessageInterpreterError.new(reply["err"])
+        error = MessageInterpreterError.new(reply["err"], reply["errStr"])
         raise error, error.description
       end
 
@@ -127,22 +127,31 @@ class NotepadqqApi
     end
 
     attr_reader :error_code
+    attr_reader :error_string
 
-    def initialize(error_code)
+    def initialize(error_code, error_string)
       @error_code = error_code
+      @error_string = error_string
     end
 
     def description
-      case @error_code
-        when ErrorCode::NONE then "None"
-        when ErrorCode::INVALID_REQUEST then "Invalid request"
-        when ErrorCode::INVALID_ARGUMENT_NUMBER then "Invalid argument number"
-        when ErrorCode::INVALID_ARGUMENT_TYPE then "Invalid argument type"
-        when ErrorCode::OBJECT_DEALLOCATED then "Object deallocated"
-        when ErrorCode::OBJECT_NOT_FOUND then "Object not found"
-        when ErrorCode::METHOD_NOT_FOUND then "Method not found"
-        else "Unknown error"
+      str_code =
+        case @error_code
+          when ErrorCode::NONE then "None"
+          when ErrorCode::INVALID_REQUEST then "Invalid request"
+          when ErrorCode::INVALID_ARGUMENT_NUMBER then "Invalid argument number"
+          when ErrorCode::INVALID_ARGUMENT_TYPE then "Invalid argument type"
+          when ErrorCode::OBJECT_DEALLOCATED then "Object deallocated"
+          when ErrorCode::OBJECT_NOT_FOUND then "Object not found"
+          when ErrorCode::METHOD_NOT_FOUND then "Method not found"
+          else "Unknown error"
+        end
+
+      unless @error_string.nil? || @error_string.empty?
+        str_code += ': ' + @error_string
       end
+
+      str_code
     end
 
   end
